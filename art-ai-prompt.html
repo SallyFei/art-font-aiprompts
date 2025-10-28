@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>藝術字提示詞範例庫</title>
+    <!-- 引入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 使用 Inter 字體以確保美觀和跨平台一致性 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7; /* 淺色背景 */
+            min-height: 100vh;
+        }
+
+        /* 確保提示詞區域高度一致且可捲動 */
+        .prompt-container {
+            height: 120px; /* 固定高度 */
+            overflow-y: auto; /* 超出內容時可捲動 */
+            font-size: 0.9rem; /* 提示詞文字略小 */
+        }
+
+        /* 隱藏滾動條，同時保持捲動功能 (適用於 Webkit 瀏覽器) */
+        .prompt-container::-webkit-scrollbar {
+            display: none;
+        }
+        .prompt-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* 9:16 圖片容器 */
+        .aspect-9-16 {
+            aspect-ratio: 9 / 16;
+        }
+
+        /* 按鈕確認訊息動畫 */
+        .copied-message {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#504DE2', /* 藍色系 */
+                        'secondary': '#facc15', /* 黃色系 */
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 md:p-8">
+    <!-- 應用程式主容器 -->
+    <div id="app" class="max-w-7xl mx-auto">
+        <!-- 標題 -->
+        <header class="text-center mb-8 p-6 rounded-xl">
+            <h1 class="text-5xl font-extrabold text-[#504DE2]">藝術字提示詞範例庫</h1>
+            <p class="text-gray-500 mt-2">點擊按鈕即可複製高品質 AI 藝術字生成提示詞。</p>
+        </header>
+
+        <!-- Tab 分類區塊 -->
+        <div class="mb-8 overflow-x-auto">
+            <div id="tabs-container" class="flex flex-wrap justify-center space-x-2 md:space-x-3 p-1 rounded-xl">
+                <!-- Tabs 將由 JavaScript 渲染 -->
+            </div>
+        </div>
+
+        <!-- 範例卡片網格 -->
+        <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 卡片將由 JavaScript 渲染 -->
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // 原始提示詞數據 (已包含在您的請求中)
+        const categoriesData = {
+            '可愛卡通': [
+                { title: 'QQ 彈力軟糖體', prompt: '繁體中文字"愛你一萬年", Q彈軟糖體, 夢幻粉色, 霓虹發光描邊, 3D 渲染, 8k, 柔和光線, 藝術字體, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img75.png' },
+                { title: '氣球卡通字', prompt: '"生日快樂", 字母由彩色氣球組成, 飄浮在空中, 絲帶, 柔焦景深, 特寫鏡頭, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img76.png' },
+                { title: '圓潤馬卡龍字', prompt: '"甜甜圈", 馬卡龍色系, 圓潤卡通字體, 奶油, 糖霜灑落, 柔和光線, 高飽和度, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img77.png' },
+                { title: '甜甜蜜蜜', prompt: '"甜甜蜜蜜", 蜂蜜流動質感, 金色蜂巢紋理與粉紅糖果包覆構成, 字體邊緣有微微融化的糖漿光澤, 周圍飄浮蜂蜜罐、愛心棒棒糖、蜜蜂與草莓, 背景為粉嫩色調的夢幻甜品店, 氣氛浪漫溫馨, 光線柔和如午后陽光, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img78.png' },
+                { title: '萌寵樂園', prompt: '"萌寵樂園", 字體由毛茸茸的貓咪、小狗、兔子等可愛動物組成, 牠們在粉彩色的遊樂園裡玩耍, 背景是棉花糖雲朵和彩虹, 整體風格極度可愛療癒, 適合兒童主題, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img79.png' },
+            ],
+            '中式風格': [
+                { title: '中式風格海報', prompt: '中式風格海報，繁體中文字「你最棒棒」五字由美麗楓、招財進寶的麒麟、故宮建築、傳統紋樣（祥雲、牡丹）、紅燈籠、銅錢、青花瓷元素拼貼構成，畫面動物園有抱元寶的鳳凰立於中式水墨山水風格的海浪（或雲海）上，頂部飄落牡丹花瓣或紅燈籠流蘇，背景純白，整體充滿中式傳統吉祥韻味，細節精緻，色彩喜慶華貴，比例「9:16」，傑作, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img80.png' },
+                { title: '中國風古劍插畫', prompt: '中國風古劍插畫,並標註繁體中文藝術字“斬妖除魔”字體用(琉璃,青銅,玉石,寶劍, 古畫等元素)拼貼組成,劍身裝飾精緻華麗,劍格以獅頭造型為主並鑲嵌寶石, 劍鞘紋飾繁複且富麗堂皇。劍身鐫刻豎排古文,背景為水彩風蓮花池,盛開的 黃色蓮花、綠色荷葉與紅金錦鯉相映成趣,整體風格融合傳統工筆與奇幻水 彩,右側搭配豎排書法題字及篆刻印章,畫面色彩絢麗且細節滿滿,充滿東方 神話的神秘氛圍。,比例 「9:16」，傑作, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img81.png' },
+                { title: '龍飛鳳舞', prompt: '繁體中文字"龍飛鳳舞", 青龍、鳳凰造型纏繞筆畫, 結合金箔與雲霧質感, 字體中心燃起金光, 邊緣有祥雲翻湧, 背景為琉璃天穹與古宮殿屋脊, 氣勢雄偉, 富中國傳統華美氣韻, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img82.png' },
+                { title: '平步青雲', prompt: '繁體中文字"平步青雲", 文字由白雲與藍天拼接構成, 筆畫上浮現仙鶴與羽毛, 背景為層層雲海與柔光穿透的天際, 整體清朗脫俗, 象徵前途無量, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img83.png' },
+                { title: '金玉滿堂', prompt: '繁體中文字"金玉滿堂", 文字以金磚、玉石、寶石拼接構成, 邊緣泛出琥珀光, 背景有古代宮殿、寶盒、錦囊與元寶堆疊, 整體貴氣奢華, 象徵財富與吉祥, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img84.png' },
+                { title: '招財進寶主題字', prompt: '繁體中文字「招財進寶」主題藝術字，文字由招財貓、財神爺、金元寶、古錢幣、紅燈籠、中式建築（廟宇、牌坊）、福袋等元素構成，3D立體造型風格，色彩鮮豔喜慶，細節豐富精緻，背景白色，商業插畫，背景用充滿財運濃鬱的吉祥氛圍。,比例 「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img85.png' },
+                { title: '美不勝收琉璃字', prompt: '在琉璃上，標註中文繁體文字草書書法“美不勝收”字體每一筆畫用名畫裝飾字體每一部份，並有飛龍抬頭盤旋字體呈螺旋狀而下，兩旁角落有兩支小麒麟，上方兩旁有2支鳳凰，兩旁中間各有不同色彩牡丹花畔，字題下方中間並擺放一些古玩藝術品裝飾，右下角古畫小印，比例 「9:16」，背景西洋名畫琉璃, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img86.png' },
+            ],
+            '日式風格': [
+                { title: '日式風格海報', prompt: '日式風格海報、繁體中文字「你最棒的」四個3D立體大字由招財貓、富士山、日式建築、傳統紋樣(海浪、櫻花)、福袋、金幣等日式元素拼貼組成，畫面四周有皮卡丘立於神奈川衝浪裡風格的海浪上，頂部飄落櫻花，背景純白，整體日式傳統與明吉，色彩豐富，色彩豐富，充滿色彩。「9:16」，傑作, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img87.png' },
+                { title: '日式浮世繪', prompt: '繁體中文字"夏日祭典", 日式浮世繪風格, 文字由鳥居、燈籠、和傘、櫻花構成, 背景為熱鬧的夏日祭典, 煙火綻放, 人群穿著浴衣, 色彩鮮豔, 線條流暢, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img88.png' },
+            ],
+            '特殊材質': [
+                { title: '立體繡線字體', prompt: '字體設計，立體繡線風格，未成年立體毛線工藝，繁體中文字“平平安安”，由藍色、黃色、棕色的粗毛線編織而成，呈現精美的辮子細節，標記小梨裝飾，背景為米色布料材質，整體風格溫暖治愈，富裕親子陪伴感，適合母嬰、親情、公益主題海報，比例“9:16”, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img89.png' },
+                { title: '玻璃寫實體', prompt: '繁體中文字"透明", 玻璃透明質感, 晶瑩剔透, 夢幻光斑, 柔和光線, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img90.png' },
+                { title: '蒸蒸日上', prompt: '"蒸蒸日上", 文字以太陽光線與金屬銅質感構成, 表面有炙熱漸變與反射, 背景為晨曦天空與上升的紅日, 遠方有都市剪影象徵進步, 整體充滿能量與希望, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img91.png' },
+                { title: '萬紫千紅', prompt: '繁體中文字"萬紫千紅", 文字以各色花瓣與水晶琉璃構成, 色彩層次豐富, 周圍綻放各類花卉：牡丹、鬱金香、薔薇, 背景春日花園、微風拂過花海, 整體充滿生命力與藝術感, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img92.png' },
+                { title: '春夏秋冬絲帶字', prompt: '薄化字體標誌設計，絲帶組成的繁體中文字“春夏秋冬”，所有的筆畫由一條彩色絲帶纏繞組成，擁有光滑感，紋理流暢靈動，在不文字識別度的前提下可以適當省略筆畫，過渡藍色橙色背景，絲帶的從左到右依次為藍色、綠色、橙色和紅色，顏色自然過渡並具有紫色感。整體風格簡約現代，褪色，具有藝術感，比例「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img93.png' },
+                { title: '晶瑩剔透玻璃字', prompt: '“晶瑩剔透”，誇張體，字形設計誇張誇張，線條粗細變化大，具有很強的衝擊力。採用視覺玻璃文字效果，具有透明感、高光和反射效果，帶有陰影和玻璃，文字呈現晶瑩剔透的矩形，比例「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img94.png' },
+                { title: '如履薄冰冰霜字', prompt: '繁體中文字「如履薄冰」，藝術字體、筆畫結構豐富創意，凸顯藝術表現力。採用冰霜文字效果，具有冰晶輪廓，帶有冷色調、立體感與霜凍紋理，比例「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img95.png' },
+                { title: '鬼斧神工太魯閣岩石', prompt: '繁體中文字為“鬼斧神工”，由台灣太魯閣地貌風格的巨大岩石結構組成，字體形狀融合山體，畫面為氣勢磅礴的河流峽谷與左河中間綿延山路景觀，水霧翻湧，中部高山聳立，天空晴朗，色調以大理石，具有厚重的台灣文化意境，風格和諧廣闊感，適合網格、城市視覺, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img96.png' },
+                { title: '古木之森', prompt: '繁體中文字“古木之森”，純黑色背景，古木森林字體，厚重的樹叢氛圍，字形被苔蘚和青藤纏繞覆蓋，綠意盎然，字裡藏葉，鳶蔓從筆畫間垂落，乾燥，深林氛圍，宛如森林精靈低語：傳遞神秘的森林感，自然生態風格，視覺潤澤、靜謐。, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img97.png' },
+                { title: '絨毛精靈', prompt: '3D 標題繁體中文文字 “絨毛精靈”。真實擬真質感,場景感。電影鏡頭。字體視覺概括:奇幻童話感,魔法生物質感,毛絨細節擬真,神秘浪漫氣息,奇妙生動,夜色奇境氛圍。字體裝飾:文字包裹奇幻絨毛,邊緣帶有發光微粒,毛流方向不規則偏靈動,局部有微微發光觸角狀裝飾。文字質感:柔滑閃光,帶輕微粒子漂浮感,絨毛如星雲般半透明,夢幻般懸浮感。文字色彩:淡紫,夜藍,魔法粉,星點亮銀,高光區域反射出藍粉光澤。細節設計:筆劃邊緣隨光線折射帶有變色效果部分毛流漂浮在空氣中,內部有微粒發光層字形設計:輕盈飄逸風格,筆劃偏細長,結構靈動,部分筆劃帶曲線或飛散狀延伸,字形不規則但整體統一。背景設計:夜色森林,漂浮微光,神秘色調主導遠景星光點綴,空氣中有魔法粒子漂浮,電影感氛圍濃厚, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img98.png' },
+                { title: '古玉傳說', prompt: '三維標題繁體中文字“古玉傳說”。真實擬真質感,場景感。電影鏡頭。字體視覺概括:厚重圓潤,古玉風格,手工感強,厚實穩重,整體渾然一體。字體裝飾:邊緣略磨損感,刻痕自然,帶有使用感與歷史感,部分字面輕微破損。文字質感:老玉質感,半透明,包漿自然,潤澤度高,紋理細密,仿古溫潤。文字色彩:墨綠為主調,點綴有黃綠色斑點,局部泛青光,顏色溫和不鮮明。細節設計:字體上有自然裂紋,顏色濃淡變化自然,陰影線打磨效果,真實度高。字形設計:圓潤粗壯,結構飽滿,緊湊,轉角處有輕微弧形處理,字體如古玉印章。背景設計:青銅器背景紋理,昏黃燈光打底,營造古代遺跡氛圍,環境微帶灰塵漂浮感。, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img99.png' },
+                { title: '荒野圖騰', prompt: '3D 繁體中文字“荒野圖騰”。真實擬真質感,場景感。電影鏡頭。字體視覺概括:獸骨刻字風,圖騰符號感,原始殘酷感,粗獷直接,極具力量,荒野部落感,生存與狩獵氛圍。字體裝飾:字邊包裹獸皮紋理,有斷裂骨紋,外緣齒狀殘破處理,表面斑斑血跡效果。文字質感:獸骨質地,乾裂,泛黃,有壓痕紋路,帶輕微反光,部分區域有剝落質感。文字色彩:象牙白,微黃褐混合,紅棕色血斑點綴,灰塵感疊加其上。細節設計:筆劃轉角處出現撕裂痕跡,邊緣齒裂不規則,局部發黑炭化處理,帶有刮痕。字形設計:骨骼式筆劃,棱角突兀,結構極簡但粗壯,模仿骨刀雕刻的原始痕跡。背景設計:荒原夜晚,月光打在石骨地面上,燃燒木柴火堆旁,獸骨堆成的圖騰圍繞。, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img100.png' },
+                { title: '您真有材', prompt: '以繁體中文字「您真有材」為主體,採用彩色顏料潑濺風格,呈現立體流動的油漆質感,色彩豐富絢麗(包含紅、橙、黃、綠、藍、紫等多種色彩),顏料有滴落、飛濺的動態效果,背景為深色,整體風格潮流、藝術、富有視覺衝擊力, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img101.png' },
+            ],
+            '節日主題': [
+                { title: '新年快樂主題字', prompt: '"繁體中文字"新年快樂", 文字由紅包, 春聯, 金元寶, 煙花, 舞龍舞獅, 橘子, 鞭炮等元素拼貼組成, 背景金紅漸層, 充滿喜慶氛圍, 比例9:16, 傑作, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img109.png' },
+                { title: '元宵節花燈主題', prompt: '"繁體中文"花燈滿月", 文字由各色花燈, 兔子, 湯圓, 流蘇, 月亮, 燈籠組成, 夜空與煙火背景, 溫馨喜慶, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img110.png' },
+                { title: '端午節龍舟主題', prompt: '繁體中文字"龍舟競渡", 文字由龍舟, 粽子, 波浪, 水珠, 竹葉組成, 色彩鮮明活潑, 晴朗天氣, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img111.png' },
+                { title: '七夕節甜蜜主題', prompt: '由無數輕盈、漸層粉色、淡紫色與米白色花瓣精巧構成的繁體中文字『甜甜蜜蜜』字樣，以極致優雅的飄逸花體風格書寫。每個筆劃都彷彿由細膩的花瓣層層疊疊而成，呈現出通透而富有立體感的視覺效果，邊緣泛著柔和光暈。這些美麗的花瓣字體被繁茂且生機勃勃的各色花卉、翠綠藤蔓及嫩芽所溫柔環繞，彷彿自字體中自然生長而出，營造出一個充滿生命力的迷你花園。溫暖而柔和的自然光線輕柔灑落，為整個畫面披上一層夢幻般的光暈，使花瓣與花朵呈現出細膩的光影變化，傳達出濃郁的浪漫、甜蜜與幸福感。整體為精緻細膩的數位插畫風格，色彩柔和、豐富且具有層次感，背景略微模糊以突出主題', imageUrl: 'https://studioxin.com/demo/twcc/images/img112.png' },
+                { title: '中秋節花好月圓', prompt: '繁體中文字"花好月圓", 文字由玉兔, 桂花, 月餅, 雲霧, 月亮元素構成, 唯美寧靜氛圍, 8k 渲染, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img113.png' },
+                { title: '冬至團圓主題', prompt: '繁體中文字"團團圓圓", 文字由湯圓, 紅豆, 火鍋, 梅花, 雪花等元素拼貼, 溫馨喜慶氛圍, 冬日暖陽, 9:16, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img114.png' },
+                { title: '春分萬物復甦', prompt: '繁體中文字"萬物復甦", 文字由嫩綠新芽, 桃花, 蝴蝶, 雨絲, 泥土, 清晨露水組成, 生機勃勃的氛圍, 柔和光線, 特寫, 4k, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img115.png' },
+                { title: '花好月圓 (唯美)', prompt: '繁體中文字"花好月圓", 文字由花瓣、月光、琉璃玻璃質感構成, 字體內透出柔光, 如月下花影, 背景是滿月與盛開花園, 漂浮著粉色花瓣與燈籠, 整體氛圍唯美浪漫, 適合節慶或婚禮主題, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img116.png' },
+                { title: '福星高照', prompt: '繁體中文字"福星高照", 文字由金光、紅燈籠與星芒構成, 表面閃耀亮光, 背景是夜空中懸掛的福字燈籠與祥雲飄動, 整體喜慶吉祥, 節慶感濃厚, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img117.png' },
+                { title: '歲歲平安', prompt: '繁體中文字"歲歲平安", 文字由煙火、蓮花、紅絨緞帶構成, 字體表面有柔光折射, 背景為夜空煙火與水面倒影, 氛圍祥和典雅, 寓意新年平安幸福, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img118.png' },
+                { title: '清明植物字', prompt: '繁體中文字“清明”，文字由綠色植物葉片和藤蔓自然生長形成，字體結構融合自然形態如嫩芽、卷、莖幹，畫面為微距森林視角，周圍有苔蘚、黃白色小花、陽光灑落的綠意林地，整體色調為柔和綠色與陽光黃，背景朦朧夢想, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img119.png' },
+                { title: '秋日踏青去', prompt: '繁體中文字「秋日踏青去」,藝術字設計,白色字體搭配綠色裝飾性曲線,黑色背景,風格活潑有活力,突出春日踏青的主題,比例 “9:16”, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img120.png' },
+            ],
+            '復古經典': [
+                { title: '懷舊霓虹燈管', prompt: '繁體中文字"老上海", 懷舊霓虹燈管風, 深夜雨中街景, 80年代復古, 潮濕質感, 背光輪廓, 電影感光線, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img121.png' },
+                { title: '復古浮雕字', prompt: '繁體中文字"經典永恆", 復古浮雕字, 青銅材質, 氧化紋理, 哥特風格, 博物館頂光, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img122.png' },
+                { title: '維多利亞復古', prompt: '繁體中文字"優雅", 維多利亞復古風格, 金色雕花裝飾, 絲綢背景, 柔和聚光燈, 貴族氣息, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img123.png' },
+            ],
+            '水墨書法': [
+                { title: '水墨暈染行書', prompt: '繁體中文字"靜心", 行書字體, 水墨藝術字, 宣紙暈染效果, 筆觸清晰, 中式古典園林背景, 超細節, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img124.png' },
+                { title: '草書火焰字', prompt: '繁體中文字"狂熱", 草書風格, 火焰燃燒特效, 熔岩, 黑色背景, 戲劇性陰影, 4k 渲染, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img125.png' },
+                { title: '爺爺泡的茶', prompt: '繁體中文字"爺爺泡的茶", 水墨書法風格, 文字彷彿由溫熱的茶湯寫成, 筆觸間散發出裊裊茶煙, 融入茶葉與山水畫元素, 背景為古樸的茶具與宣紙, 整體氛圍溫暖而懷舊, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img102.png' },
+            ],
+            '藝術手寫': [
+                { title: '花漾手記', prompt: '繁體中文字“花漾手記”、純黑背景。文藝手寫字體,筆劃線條流暢且有藝術感,靈動,筆劃粗細變化自然,自由文藝。字體視覺概括:結構錯落有致,強調靈動飄逸,藝術性極高。字形設計:筆劃粗中帶細,部分線條有抽象飛白,轉折收筆大膽下沉或上挑,節奏鮮明。字體色彩:白色為主色,玫瑰紅與橙金點綴組合,增強畫面溫暖感與動感。細節設計:字形上方輕微投影感,邊緣加入不規則塗抹痕跡,字中有類似浮水印的小裝飾圖, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img126.png' },
+                { title: '我的老師是李小華', prompt: '繁體中文字"我的老師李小華"/"MY TEACHER, XU BEIHONG",融合文藝鋼筆、西方古典與行草題韻風格,字體結構含有書法行筆節奏與西式連筆優雅,背景為淡墨暈染中融入油彩肌理,隱現奔馬畫稿與畫室寫生線稿圖層,色調採用厚重墨灰與赭紅色調結合,象徵傳統與現代美術交會,版式佈局如展覽海報或紀念畫冊封面,局部裝飾鋼筆划痕、復古印章與素描紙張紋理,整體營造出高度凝練的藝術氛圍,致敬大師筆觸中的民族精神與時代溫度,高級歷史美學,比例“9:16”, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img103.png' },
+                { title: '跨過山和大海', prompt: '繁體中文字"我曾經跨過山和大海,也穿過人山人海"/"I HAVE CROSSED MOUNTAINS AND SEAS, AND CROWDS OF HUMANITY",清逸筆跡融合光韻夜影風格, 線條纖細飄逸,微拖尾書寫感,淡藍紫或極夜漸變背景,遠山海浪光氤文字結構靈動分佈,有留白節奏感,視覺構圖如夢似幻,情緒充滿漂泊與成長 的浪漫,東方哲意與現代浪漫融合,高級治癒感,傑作,比例「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img127.png' },
+            ],
+            '賽博未來': [
+                { title: '科技稜角體', prompt: '繁體中文字"未來之光", 科技稜角體, 鍍鉻金屬質感, 藍色電弧發光, 賽博朋克城市, 低視角, 8k 渲染, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img128.png' },
+                { title: '時尚液體字', prompt: '繁體中文字"流動", 時尚液體字, 霓虹光暈, 鏡面反射, 黑色背景, 特寫鏡頭, 高飽和度, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img129.png' },
+                { title: '心想事成', prompt: '繁體中文字"心想事成", 文字由金色星光與雲煙交織而成, 筆畫間有閃爍粒子流動, 背景是星空與流星劃過夜空, 畫面帶夢想與希望感, 整體明亮閃耀, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img130.png' },
+                { title: '街頭潮流', prompt: '繁體中文字“街頭潮流”。充滿活力的三維文字,有外輪廓,強烈 3D視覺。圓潤的字形,現代藝術文藝字體。文字周圍有豐富裝飾元素,營造氛圍。C4D渲染。字體視覺概括:嘻哈感強烈,飽滿圓潤,彈跳視覺,厚重立體,街頭風,動感十足,C4D風格,科技潮流混合,現代潮酷。字體裝飾:外輪廓加粗,邊緣描線發光,金屬邊框,內嵌街頭塗鴉紋樣,點綴塗鴉箭頭、炸裂音符,字元間有連貫電光線。文字質感:橡膠質感,內嵌柔光反射,局部金屬拉絲,啞光處理,帶顆粒感。文字色彩:主色霓虹橙,輔電光藍,邊緣紫紅高光,中心黃白漸變,整體強對比配色。細節設計:邊角做鈍角處理,文字內部做反凹處理,厚度層級明顯,表面有小顆粒、貼紙裂縫細節。背景設計:都市夜景剪影,後景巨型音響牆,天空塗鴉雲,LED 燈光掃射,飄浮耳機、唱針、麥克風元素。, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img131.png' },
+                { title: '星影', prompt: '繁體中文字"星影",現代藝術字結構融合筆畫,狂野金屬質感線條,白色發光主體,字形散射動態,適用於高端活動主視覺設計,深黑背景,比例“9:16”, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img132.png' },
+                { title: '虛擬偶像', prompt: '繁體中文字"虛擬偶像", 充滿未來感的全息投影字體, 帶有數位光暈和毛刺效果, 文字周圍飄浮著音符和愛心等粉絲應援符號, 背景是絢麗的虛擬演唱會舞台, 燈光閃爍, 營造出強烈的科技偶像氛圍, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img133' },
+            ],
+            '創意拼貼': [
+                { title: '字母建築拼貼', prompt: '繁體中文字"城市", 文字由建築物、鋼鐵、玻璃拼貼而成, 融入現代摩天大樓景觀, 夕陽, 俯視角, 8k 渲染, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img107.png' },
+                { title: '中式燒烤主題字', prompt: '繁體中文字中式「燒烤」主題藝術字，由各類燒烤食材（羊肉串、牛肉串、烤雞翅、烤茄子、烤玉米、烤青椒、烤韭菜、烤香腸等）漢族組成，3D立體造型風格、食材紋理（肉質紋理、烤焦質感、調料顆粒）、白色背景、商業插畫家酒景、光影紋理，烤焦質感、調色盤, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img106.png' },
+                { title: '大溪老街主題字', prompt: '繁體中文字“大溪老街”主题藝術字,文字由老街上的元素(巴洛克建築、老式騎樓、復古 招牌、糖葫蘆攤位、青磚瓦房、红燈籠)组成漢字,3D 立體建模風格,細節 逼真(磚瓦紋理、木質招牌做舊感、人物微型擺件),搭配缩小版老街背景(错錯落巴洛克的老式建築、蜿蜒的石板巷、市井攤位),白色背景,商業插畫質感, 光影懷舊細膩,呈现充滿煙火氣的復古老街視覺氛圍。,比例 「9:16」, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img104.png' },
+                { title: '夏日果園', prompt: '三維標題文字”夏日果園”。真實擬真質感,場景感。電影鏡頭。字體視覺概括:熱帶風情,果香視覺,清新自然,立體豐盈,水果拼接,果皮質感,生動飽滿。字體裝飾:插入果葉,纏繞藤蔓,點綴花瓣,細節有露珠,果肉剖面作為裝飾結構。文字質感:果肉彈性,果皮光滑,部分帶毛,汁液微溢,表面有光澤,濕潤真實。文字色彩:橙色,綠色,紅色,黃色,鮮豔飽和,局部漸變,自然水果本色。細節設計:水果拼接邊緣自然過渡,籽粒嵌入表面,果皮褶皺真實模擬,有果點斑紋。字形設計:偏圓潤畫厚實,結構緊湊,造型豐滿,有果肉感的膨脹弧度。設計:熱帶叢林,光影斑駁,陽光穿透樹葉,背景虛焦水,微風動感。, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img108.png' },
+                { title: '台灣夜市小吃', prompt: '"台灣夜市小吃", 文字由珍珠奶茶、鹽酥雞、大腸包小腸、蚵仔煎等經典台灣小吃立體拼貼而成, 食材紋理逼真誘人, 背景是熱鬧的夜市, 燈火通明, 人聲鼎沸, 整體風格充滿活力與台灣在地特色, 藝術字體, 3D 渲染, 高度詳細, 超高畫質, (傑作:1.3), 藝術插畫, 最佳品質, cinematic lighting', imageUrl: 'https://studioxin.com/demo/twcc/images/img105.png' }
+            ]
+        };
+
+        // 整理所有提示詞，並加入 '全部' 類別
+        const allPrompts = Object.values(categoriesData).flat();
+        const tabs = ['全部', ...Object.keys(categoriesData)];
+        const allData = { '全部': allPrompts, ...categoriesData };
+
+        // 應用程式狀態管理
+        const state = {
+            activeTab: '全部',
+            copyTimeout: null,
+            isCopying: false,
+        };
+
+        const elements = {
+            tabsContainer: document.getElementById('tabs-container'),
+            cardGrid: document.getElementById('card-grid'),
+        };
+
+        /**
+         * 處理複製提示詞到剪貼簿的功能
+         * @param {string} prompt 要複製的文字
+         * @param {HTMLElement} buttonElement 按鈕元素
+         */
+        function copyPrompt(prompt, buttonElement) {
+            if (state.isCopying) return; // 避免重複點擊
+
+            // 確保使用 document.execCommand('copy') 以在 iFrame 中獲得最佳兼容性
+            const textarea = document.createElement('textarea');
+            textarea.value = prompt;
+            textarea.style.position = 'fixed'; // 讓它不在螢幕上顯示
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+            } catch (err) {
+                console.error('無法複製到剪貼簿', err);
+                success = false;
+            }
+
+            document.body.removeChild(textarea);
+
+            if (success) {
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = '✅ 已複製提示詞訊息';
+                buttonElement.classList.add('bg-green-500', 'hover:bg-green-600');
+                buttonElement.classList.remove('bg-primary', 'hover:bg-blue-600');
+                state.isCopying = true;
+
+                // 清除舊的計時器 (如果有)
+                clearTimeout(state.copyTimeout);
+
+                // 2 秒後恢復按鈕
+                state.copyTimeout = setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    buttonElement.classList.add('bg-primary', 'hover:bg-blue-600');
+                    state.isCopying = false;
+                }, 2000);
+            } else {
+                console.error("複製失敗，請嘗試手動選取。");
+                // 可以在這裡顯示一個錯誤訊息，但為了簡潔保持原樣
+            }
+        }
+
+        /**
+         * 渲染單一卡片的 HTML
+         * @param {Object} item 提示詞物件
+         * @returns {string} 卡片的 HTML 字符串
+         */
+        function renderCard(item) {
+            // 使用 placeholder 圖片作為容錯
+            const placeholderImageUrl = `https://placehold.co/270x480/4c4c4c/ffffff?text=${item.title}`;
+            
+            return `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-transform duration-300 hover:shadow-xl">
+                    <!-- 9:16 圖片區 -->
+                    <div class="aspect-9-16 overflow-hidden">
+                        <img 
+                            src="${item.imageUrl}" 
+                            alt="" 
+                            class="w-full h-full object-cover"
+                            onerror="this.onerror=null;this.src='${placeholderImageUrl}';" 
+                            loading="lazy"
+                        >
+                    </div>
+                    
+                    <!-- 文字與按鈕區 (固定高度以確保卡片一致) -->
+                    <div class="p-4 flex flex-col justify-between flex-grow">
+                        <!-- 標題 -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${item.title}</h3>
+                        
+                        <!-- 提示詞文字 (大一點的字體，固定高度且可捲動) -->
+                        <div class="prompt-container border border-gray-100 bg-gray-50 p-3 rounded-lg mb-3">
+                            <p class="text-base text-gray-700 font-mono whitespace-pre-wrap leading-relaxed">${item.prompt}</p>
+                        </div>
+                        
+                        <!-- 複製按鈕 -->
+                        <button 
+                            data-prompt="${item.prompt.replace(/"/g, '&quot;')}"
+                            class="copy-btn w-full px-4 py-2 bg-primary text-white font-semibold rounded-full shadow-md transition-all duration-300 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg relative"
+                        >
+                            複製提示詞
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * 渲染所有卡片
+         */
+        function renderCards() {
+            const filteredPrompts = allData[state.activeTab] || [];
+            elements.cardGrid.innerHTML = filteredPrompts.map(renderCard).join('');
+
+            // 重新綁定事件監聽器
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const prompt = e.currentTarget.getAttribute('data-prompt');
+                    copyPrompt(prompt, e.currentTarget);
+                });
+            });
+        }
+
+        /**
+         * 渲染 Tab 按鈕
+         */
+        function renderTabs() {
+            elements.tabsContainer.innerHTML = tabs.map(tab => {
+                const isActive = tab === state.activeTab;
+                const baseClasses = "px-4 py-2 text-sm md:text-base font-semibold rounded-full transition-colors duration-200 shadow-sm whitespace-nowrap mb-2";
+                const activeClasses = "bg-primary text-white shadow-lg hover:bg-blue-600";
+                const inactiveClasses = "bg-gray-200/50 text-gray-700 hover:bg-primary/20";
+                
+                return `
+                    <button 
+                        data-tab="${tab}" 
+                        class="${baseClasses} ${isActive ? activeClasses : inactiveClasses}"
+                        onclick="App.setActiveTab('${tab}')"
+                    >
+                        ${tab}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        /**
+         * 初始化應用程式
+         */
+        function init() {
+            renderTabs();
+            renderCards();
+        }
+
+        // 將主要功能暴露給全域範圍，以便 HTML 元素可以調用
+        window.App = {
+            setActiveTab: (tab) => {
+                if (state.activeTab !== tab) {
+                    state.activeTab = tab;
+                    renderTabs();
+                    renderCards();
+                }
+            }
+        };
+
+        // 頁面加載完成後初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
